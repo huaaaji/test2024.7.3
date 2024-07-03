@@ -1,0 +1,243 @@
+\documentclass{article}
+\usepackage[UTF8]{ctex}
+\usepackage{multirow}
+\usepackage{color}
+\usepackage{amsmath}
+\begin{document}
+	\title{LaTex学习笔记}
+	\maketitle
+	\section{文档结构}
+	\subsection{基本文档结构}
+	\textbackslash documentclass[a4paper, 12pt]\{article\}
+	\\
+\label{ref1}
+	\\
+	\textbackslash begin\{document\}\\
+	  在这里输入文本内容\\
+	\textbackslash end\{document\}\\
+	
+	*注意，反斜杠等保留字在latex输出应注意转义，反斜杠->\textbackslash textbackslash
+	而其他的符号等若需转义，则以反斜杠加于之前
+	
+	\subsection{文档标题}
+	\textbackslash maketitle 命令可以给文档创建标题。你需要指定文档的标题。
+	如果没有指定日期，就会使用现在的时间，作者是可选的。\\
+	以下是示例：\\
+	\textbackslash title\{My First Document\}\\
+	\textbackslash author\{My Name\}\\
+	\textbackslash date\{\textbackslash today\}\\
+	\textbackslash maketitle\\
+	 注意，标题、作者等内容应于文本内容区域\\
+\textbackslash today 是插入当前时间的命令。你也可以输入一个不同的时间，比如 \textbackslash date\{November 2013\}\\
+article 文档的正文会紧跟着标题之后在同一页上排版。report 会将标题置为单独的一页。\\
+\\
+章（Chatpers）、节（Sections）和小节（Subsections）。下列分节命令适用于 article 类型的文档：\\
+\textbackslash section\{...\}\\
+\textbackslash subsection\{...\}\\
+\textbackslash subsubsection\{...\}\\
+\textbackslash paragraph\{...\}\\
+\textbackslash subparagraph\{...\}\\
+\subsection{创建标签}
+使用 \textbackslash label\{labelname\} 对章节创建标签。然后输入 \textbackslash ref\{labelname\} 或者 \textbackslash pageref\{labelname\} 来引用对应的章节。\\
+
+下面是一个示范，引用了一个到1.1 基本文档结构的标签\\
+文本中（甚至行中）的\textbackslash ref\{ref1\}乃：\ref{ref1}  \\
+文本中（甚至行中）的\textbackslash pageref\{ref1\}乃：\pageref{ref1}
+\subsection{生成目录}
+使用 \textbackslash tableofcontents 在文档中创建目录。通常我们会在标题的后面建立目录。\\
+\textbackslash newpage 命令会另起一个页面
+\section{文字处理}
+\subsection{中文支持}
+使用 CTeX 宏包。只需要在文档的前导命令部分添加：\\
+\textbackslash usepackage[UTF8]\{ctex\}\\	
+且排版时应使用xelatex，因其支持中文字体	
+
+\subsection{字体效果}
+\subsubsection{字之大小}
+\textbackslash tiny、
+\textbackslash scriptsize、
+\textbackslash footnotesize、
+\textbackslash small、
+\textbackslash normalsize、
+\textbackslash large、
+\textbackslash Large、
+\textbackslash LARGE、
+\textbackslash huge、
+\textbackslash Huge\\
+字号一般由特殊的名字定义，它们的大小并不绝对，而是文档默认字体大小的相对值（在\textbackslash documentclass声明中定义）。
+此类字体大小之用法，需要将改变大小的文本与命令置于一个花括号中\\
+{如In this example the \{\textbackslash huge huge font size\} is set即In this example the {\huge huge font size} is set}
+\subsubsection{字体样式之使用}
+\label{tabular1}
+\begin{tabular}{c|c|c|c|c|}\centering
+序号&样式&命令&转换命令&示例\\\hline
+1&medium 中等		&\textbackslash textmd\{text\}					&\textbackslash textbackslash mdseries	&\textmd{text 0123 测试}\\\hline
+2&bold 粗体			&\textbackslash textbf\{text\}					&\textbackslash bfseries					&\textbf{text 0123 测试}\\\hline
+3&upright 直立的		&\textbackslash textup\{text\}					&\textbackslash upshape					&\textup{text 0123 测试}\\\hline
+4&italic 斜体		&\textbackslash textit\{text\}					&\textbackslash itshape					&\textit{text 0123 测试}\\\hline
+5&slanted 斜体		&\textbackslash textsl\{text\}					&\textbackslash slshape					&\textsl{text 0123 测试}\\\hline
+6&small caps&\multirow{2}{*}{\textbackslash textsc\{text\}}&\multirow{2}{*}{\textbackslash scshape}&\multirow{2}{*}{\textsc{text 0123 测试}}\\
+7&小型大写字母& & &\\\hline
+8&underlined words	&\textbackslash underline\{text\}				& 												&\underline{text 0123 测试}\\\hline
+9&teletype			&\textbackslash texttt\{text\}					&												&\texttt{text 0123 测试}\\\hline
+10&						&\textbackslash textrm\{text\}					&												&\textrm{text 0123 测试}\\\hline
+11&						&\textbackslash textsf\{text\}					&												&\textsf{text 0123 测试}
+\end{tabular}
+\subsection{彩色字体}
+需要使用包（package）。你可以引用很多包来增强 LaTeX 的排版效果。包引用的命令放置在文档的前导命令的位置（即放在 \textbackslash begin\{document\} 命令之前）。使用 \textbackslash usepackage[options\{package\} 来引用包。其中 package 是包的名称，而 options 是指定包的特征的一些参数。\\
+使用彩色字体的代码为:\\\{\textbackslash color\{colorname\}text\}\\
+例以：
+{\color{yellow}yellow}{\color{red}red}{\color{blue}blue}{\color{white}white}\\
+同样可以使用 Color 包中的 \textbackslash colorbox 命令来达到。用法如下：\\
+\textbackslash colorbox\{colorname\}\{text\}，例以：\\
+\colorbox{yellow}{yellow} \colorbox{blue}{blue}
+\subsection{段落缩进}
+LaTeX 默认每个章节第一段首行顶格，之后的段落首行缩进。如果想要段落顶格，在要顶格的段落前加 \textbackslash noindent 命令即可。如果希望全局所有段落都顶格，在文档的某一位置使用 \textbackslash setlength\{\textbackslash parindent\}\{0pt\} 命令，之后的所有段落都会顶格。
+
+\subsection{列表}
+LaTeX 支持两种类型的列表：有序列表（enumerate）和无序列表（itemize）。列表中的元素定义为 \textbackslash item。列表可以有子列表。
+例以如下代码：
+\textbackslash begin\{enumerate\}\\
+  \textbackslash item First thing\\
+\\
+\textbackslash item Second thing\\
+    \textbackslash begin\{itemize\}\\
+      \textbackslash item A sub-thing\\
+\\
+      \textbackslash item Another sub-thing\\
+    \textbackslash end\{itemize\}\\
+\\
+  \textbackslash item Third thing\\
+\textbackslash end\{enumerate\}\\
+效果如下:\\
+\begin{enumerate}
+  \item First thing
+
+  \item Second thing
+    \begin{itemize}
+      \item A sub-thing
+
+      \item Another sub-thing
+    \end{itemize}
+
+  \item Third thing
+\end{enumerate}
+
+可以使用方括号参数来修改无序列表头的标志。例如，\textbackslash item[\-] 会使用一个杠作为标志，你甚至可以使用一个单词，比如 \textbackslash item[One]。
+
+\subsection{注释和空白}
+\subsubsection{注释}
+使用 \% 创建一个单行注释，在这个字符之后的该行上的内容都会被忽略，直到下一行开始
+\subsubsection{空白}
+多个连续空格在 LaTeX 中被视为一个空格。多个连续空行被视为一个空行。空行的主要功能是开始一个新的段落。通常来说，LaTeX 忽略空行和其他空白字符，两个反斜杠（\textbackslash \textbackslash ）可以被用来换行。
+如果你想要在你的文档中添加空格，你可以使用 \textbackslash vaspace\{...\} 的命令。这样可以添加竖着的空格，高度可以指定。如 \textbackslash vspace\{12pt\} 会产生一个空格，高度等于 12pt 的文字的高度。
+\subsection{特殊字符}
+见前述\\
+并注意在使用 \^{} 和 \~{} 字符的时侯需要在后面紧跟一对闭合的花括号，否则他们就会被解释为字母的上标，就像 \textbackslash \^{} e 会变成\~e 。
+
+\section{表格}
+表格（tabular）命令用于排版表格。LaTeX 默认表格是没有横向和竖向的分割线的——如果你需要，你得手动设定。LaTeX 会根据内容自动设置表格的宽度。此代码可以创一个表格：
+\textbackslash begin\{tabular\}\{...\}
+省略号会由定义表格的列的代码替换：\\
+l 表示一个左对齐的列；\\
+r 表示一个右对齐的列；\\
+c 表示一个向中对齐的列；\\
+| 表示一个列的竖线；\\
+例如，\{lll\} 会生成一个三列的表格，并且保存向左对齐，没有显式的竖线；\{|l|l|r|\} 会生成一个三列表格，前两列左对齐，最后一列右对齐，并且相邻两列之间有显式的竖线。\\\\
+表格的数据在 \textbackslash begin{tabular} 后输入：\\
+\& 用于分割列；\\
+\textbackslash \textbackslash  用于换行；\\
+\textbackslash hline 表示插入一个贯穿所有列的横着的分割线；\\
+\textbackslash cline\{1-2\} 会在第一列和第二列插入一个横着的分割线。\\
+\textbackslash multirow\{A\}\{*\}\{单元格内容\}, A表示所跨行数, 第二个括号可以换成单元格大小等参数。并注意跨行功能在包中，需要加载\textbackslash usepackage\{multirow\}：提供跨行命令
+\textbackslash multicolumn\{A\}\{|c|\}\{单元格内容\}, A表示所跨列数，\{|c|\}是表示单元格格式，画单元格左右侧的边界线\\
+\textbackslash centering:把表居中\\
+最后使用 \textbackslash end\{tabular\} 结束表格。\\
+关于表格的使用实例，请见\pageref{tabular1}页的\ref{tabular1}
+\\
+
+\section{公式}
+\subsection{插入公式}
+你可以使用一对 \$ 来启用数学模式，这可以用于撰写行内数学公式。例如 \$1+2=3\$ 的生成效果是 $1+2=3$。\\
+如果是生成带标号的公式，可以使用 \textbackslash begin\{equation\}...\textbackslash end\{equation\}\\
+例以：\\
+\textbackslash begin\{equation\}\\
+  1+2=3\\
+\textbackslash end\{equation\}\\
+乃：\\
+\begin{equation}
+  1+2=3
+\end{equation}
+使用 \textbackslash begin\{eqnarray\}...\textbackslash end\{eqnarray\} 来撰写一组带标号的公式。\\
+例以：\\
+\textbackslash begin\{eqnarray\}\\
+  a \& = \& b + c \\
+  \& = \& y - z
+\textbackslash end\{eqnarray\}\\
+乃\\
+\begin{eqnarray}
+  a & = & b + c \\
+  & = & y - z
+\end{eqnarray}
+要撰写不标号的公式就在环境标志的后面添加 * 字符，如 \{equation*\}，\{eqnarray*\}\\
+\\
+可以发现，使用 eqnarray 时，会出现等号周围的空隙过大之类的问题。\\
+可以使用 amsmath 宏包中的 align 环境：\\
+\textbackslash usepackage\{amsmath\}\\
+...\\
+\textbackslash begin\{align\}\\
+  a \& = b + c \\
+    \& = y - z\\
+\textbackslash end\{align\}\\
+乃：\\
+\begin{align}
+  a & = b + c \\
+    & = y - z
+\end{align}
+抑或在行间公式中使用 aligned 环境。它们的名字后面加上星号后，公式就不带标号了。
+
+\subsection{插入符号}
+一些基础的符号可以直接键入，但大多数特殊符号需要使用命令来显示
+
+\subsubsection{上标和下标}
+\begin{itemize}
+\item 上标（Powers）使用 \^{} 来表示，比如 \$n\^{}2\$ 生成的效果为 $n^2$。
+
+\item 下标（Indices）使用 \_{} 表示，比如 \$2\_{}a\$ 生成的效果为 $2_a$。
+
+\item 如果上标或下标的内容包含多个字符，请使用花括号包裹起来。比如 \$b\_{}\{a-2\}\$ 的效果为 $b_{a-2}$。
+\end{itemize}
+
+\subsubsection{分数}
+\begin{itemize}
+\item 分数使用 \textbackslash frac\{numerator\}\{denominator\} 命令插入。比如 \$\$\textbackslash frac\{a\}\{3\}\$\$ 的生成效果为$$\frac{a}{3}$$
+\item 分数可以嵌套。比如 \$\$\textbackslash frac\{y\}\{\textbackslash frac\{3\}\{x\}+b\}\$\$ 的生成效果为$$\frac{y}{\frac{3}{x}+b}$$
+\end{itemize}
+
+\subsubsection{根号}
+\begin{itemize}
+\item 我们使用 \textbackslash sqrt\{...\} 命令插入根号。省略号的内容由被开根的内容替代。如果需要添加开根的次数，使用方括号括起来即可。
+\item 例如 \$\$\textbackslash sqrt\{y\^{}2\}\$\$ 的生成效果为 $$\sqrt{y^2}$$
+\item 而 \$\$\textbackslash sqrt[x]\{y\^{}2\}\$\$ 的生成效果为 $$\sqrt[x]{y^2}$$ 
+\end{itemize}
+
+\subsubsection{求和与积分}
+\begin{itemize}
+\item 使用 \textbackslash sum 和 \textbackslash int 来插入求和式与积分式。对于两种符号，上限使用 \^{} 来表示，而下限使用 \_{} 表示。
+\item \$\$\textbackslash sum\_{}\{x=1\}\^{}5 y\^{}z\$\$ 的生成效果为$$\sum_{x=1}^5 y^z$$
+\item \$\$\textbackslash int\_{}a\^{}b f(x)\$\$ 的生成效果为$$\int_a^b f(x)$$
+\end{itemize}
+
+\subsubsection{希腊字母}
+我们可以使用反斜杠加希腊字母的名称来表示一个希腊字母。名称的首字母的大小写决定希腊字母的形态。
+\begin{itemize}
+\item \$\textbackslash alpha\$=$\alpha$
+\item \$\textbackslash beta\$=$\beta$
+\item \$\textbackslash delta, \textbackslash Delta\$=							$\delta, \Delta$
+\item \$\textbackslash pi, \textbackslash Pi\$=									$\pi, \Pi$
+\item \$\textbackslash sigma, \textbackslash Sigma\$=							$\sigma, \Sigma$
+\item \$\textbackslash phi, \textbackslash Phi, \textbackslash varphi\$=	$\phi, \Phi, \varphi$
+\item \$\textbackslash psi, \textbackslash Psi\$=								$\psi, \Psi$
+\item \$\textbackslash omega, \textbackslash Omega\$=							$\omega, \Omega$
+\end{itemize}
+\end{document}
