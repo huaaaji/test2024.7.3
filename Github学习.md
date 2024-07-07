@@ -21,6 +21,8 @@ Git Bash 提供了一些类似于 Unix shell 的特性，包括常用的 Unix �
 
 略
 
+![Git常用命令](./pictures/git-common-orders.png)
+
 ### Git与Github的绑定——SSH密钥
 
 在 Git bash 中输入 `cd ~/.ssh`，返回 "no such file or directory" 表明电脑没有ssh key，需要创建ssh key；
@@ -33,5 +35,34 @@ Git Bash 提供了一些类似于 Unix shell 的特性，包括常用的 Unix �
 
 在Git bash中通过`ssh -T git@github.com`来检查Git是否成功绑定
 
-![Git常用命令](./pictures/git-common-orders.png)
+    git config --global user.name “gitname”
+    git config --global user.email “git邮箱”
 
+至此，基本完成本地Git和Github的绑定
+
+### 管理代码
+
+***push***：本地的代码有了更新，为了保持远程与本地的代码同步，我们就需要把本地的代码push到远程的仓库，代码示例：
+
+    git push origin master
+
+***pull***：远程仓库的代码有了更新，为了保持本地与远程的代码同步，我们就需要把远程的代码pull到本地，代码示例： 
+
+    git pull origin master
+
+***clone***：将库(repository)克隆至本地，便于以后上传代码
+点进仓库之后点击 Code，点击 ssh 会看到一串网址（http也可以），这个地址就是代码地址。
+通过Git bash进入欲克隆仓库所至的路径（可以在Windows文件资源管理器中通过邮件在所在目录打开Git bash）
+在Git bash中使用如下命令clone库
+
+    git clone <url>
+
+之后，在本地所选定目录下就会出现一个文件夹，表示即刚刚克隆的库
+
+同样的，在本地库目录里创建了新文件，则需要在库的目录里使用Git bash并通过
+
+    git add 文件名
+来添加文件，并通过
+
+    git commit -m “commit的description”
+来提交commit
