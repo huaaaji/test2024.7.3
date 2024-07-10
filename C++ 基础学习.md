@@ -209,7 +209,7 @@ FILE 是C语言的`stdio.h`里面预定义的一个结构体，是管理文件�
 ### 示例
 
 ~~~ C++
-#include <iostream>
+#include <stdio.h>
 
 int main()
 {
