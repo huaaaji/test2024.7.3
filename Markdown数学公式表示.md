@@ -72,7 +72,7 @@ $\frac{1}{2}$|`\frac{1}{2}`
 6.累乘|$\prod_{n=1}^{99}{x_n}$|`\prod_{n=1}^{99}{x_n}`
 -|$\prod_{n=1}^{99}{x_n}$|`\prod_{n=1}^{99}{x_n}`
 7.箭头|$a \leftarrow b \rightarrow c \leftrightarrow d \Leftrightarrow e \rightleftharpoons f$|`a \leftarrow b \rightarrow c \leftrightarrow d \Leftrightarrow e \rightleftharpoons f`
--|$\longleftarrow b \longrightarrow c \Longleftrightarrow da⟵b⟶c⟺d	a \longleftarrow b \longrightarrow c \Longleftrightarrow d$|`\longleftarrow b \longrightarrow c \Longleftrightarrow da⟵b⟶c⟺d	a \longleftarrow b \longrightarrow c \Longleftrightarrow d`
+-|$\longleftarrow b \longrightarrow c \Longleftrightarrow a \longleftarrow b \longrightarrow c \Longleftrightarrow d$|`\longleftarrow b \longrightarrow c \Longleftrightarrow a \longleftarrow b \longrightarrow c \Longleftrightarrow d`
 -|$a \nearrow b \searrow c \nwarrow d \searrow e$|`a \nearrow b \searrow c \nwarrow d \searrow e`
 -|$a \uparrow b \downarrow c \Uparrow d \Downarrow e$|`a \uparrow b \downarrow c \Uparrow d \Downarrow e`
 -|$a \rightharpoonup b \rightharpoondown c \leftharpoonup d \leftharpoondown e$|`a \rightharpoonup b \rightharpoondown c \leftharpoonup d \leftharpoondown e`
@@ -269,8 +269,8 @@ $$
 \frak|旧德式字体|$S a m p l e \frak{Sample}Sample$
 \cal|花体|$Sample\mathcal{sample}Sample$
 \Bbb|黑板粗体|$S A M P L E \Bbb{SAMPLE}SAMPLE$
-\mit|数学斜体|
-\scr|手写体|
+\mit|数学斜体|-
+\scr|手写体|-
 
 ### 在字符中添加空格
 
