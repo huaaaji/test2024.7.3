@@ -371,7 +371,7 @@ v0.fill(1);  // 填充数组
 for (int i = 0; i != arr.size(); ++i) cout << arr[i] << " ";
 ~~~
 
-### deque
+#### deque
 
 `std::deque` 是 STL 提供的 **双端队列** 数据结构。能够提供线性复杂度的插入和删除，以及常数复杂度的随机访问。
 
