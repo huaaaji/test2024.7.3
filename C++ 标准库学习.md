@@ -93,23 +93,6 @@ C++ 标准中的不少特性也都来自于 Boost，如智能指针、元编程�
 
 迭代器可以用来遍历容器，例如，下面两个 for 循环的效果是一样的：
 
-vector<int> data(10);
-
-for (int i = 0; i < data.size(); i++)
-  cout << data[i] << endl;  // 使用下标访问元素
-
-for (vector<int>::iterator iter = data.begin(); iter != data.end(); iter++)
-  cout << *iter << endl;  // 使用迭代器访问元素
-// 在C++11后可以使用 auto iter = data.begin() 来简化上述代码：
-vector<int> data(10);
-
-for (int i = 0; i < data.size(); i++)
-  cout << data[i] << endl;  // 使用下标访问元素
-
-for (vector<int>::iterator iter = data.begin(); iter != data.end(); iter++)
-  cout << *iter << endl;  // 使用迭代器访问元素
-// 在C++11后可以使用 auto iter = data.begin() 来简化上述代码
-
 ~~~C++
 vector<int> data(10);
 
@@ -238,6 +221,25 @@ cout << "v6 = ";
 copy(v6.begin(), v6.end(), ostream_iterator<int>(cout, " "));
 cout << endl;
 ~~~
+
+>Kimi: 在C++中，`ostream_iterator` 是一个模板类，用于提供对输出流的迭代访问。`ostream_iterator<int>` 表示一个专门用于输出 `int` 类型数据的迭代器，它将数据输出到 `cout`（标准输出流）。
+构造函数 `ostream_iterator<int>(cout, " ")` 表示创建了一个 `int` 类型的输出流迭代器，它将输出的每个整数后面跟一个空格。这里的 `" "` 是一个分隔符，用于在输出多个整数时分隔它们。
+例如，如果你有一个整数数组或容器，你可以使用这个迭代器来输出它们：
+
+```cpp
+#include <iostream>
+#include <iterator>
+#include <vector>
+
+int main() {
+    std::vector<int> vec = {1, 2, 3, 4, 5};
+    std::ostream_iterator<int> out_it( std::cout, " " );
+    std::copy( vec.begin(), vec.end(), out_it );
+    return 0;
+}
+```
+
+>这段代码会输出：`1 2 3 4 5`，每个数字后面都有一个空格。
 
 ###### 元素访问
 
@@ -375,10 +377,554 @@ for (int i = 0; i != arr.size(); ++i) cout << arr[i] << " ";
 
 `std::deque` 是 STL 提供的 **双端队列** 数据结构。能够提供线性复杂度的插入和删除，以及常数复杂度的随机访问。
 
+##### deque的使用方法
 
+以下介绍常用用法，详细内容 [请参见 C++](https://zh.cppreference.com/w/cpp/container/deque) 文档。deque 的迭代器函数与 vector 相同，因此不作详细介绍。
+
+###### 构造函数
+
+~~~C++
+using namespace std;
+// 1. 定义一个int类型的空双端队列 v0
+deque<int> v0;
+// 2. 定义一个int类型的双端队列 v1，并设置初始大小为10; 线性复杂度
+deque<int> v1(10);
+// 3. 定义一个int类型的双端队列 v2，并初始化为10个1; 线性复杂度
+deque<int> v2(10, 1);
+// 4. 复制已有的双端队列 v1; 线性复杂度
+deque<int> v3(v1);
+// 5. 创建一个v2的拷贝deque v4，其内容是v4[0]至v4[2]; 线性复杂度
+deque<int> v4(v2.begin(), v2.begin() + 3);
+// 6. 移动v2到新创建的deque v5，不发生拷贝; 常数复杂度; 需要 C++11
+deque<int> v5(std::move(v2));
+~~~
+
+###### deque之元素访问
+
+与 vector 一致，但无法访问底层内存。其高效的元素访问速度可参考实现细节部分。
+
+函数|作用
+---|---
+`at()`        |返回容器中指定位置元素的引用，执行越界检查，常数复杂度。
+`operator[]`  |返回容器中指定位置元素的引用。不执行越界检查，常数复杂度。
+`front()`     |返回首元素的引用。
+`back()`      |返回末尾元素的引用。
+
+###### deque之迭代器
+
+与 `vector` 一致。
+
+###### deque之元素增删及修改
+
+与 vector 一致，并额外有向队列头部增加元素的函数。
+
+函数|用法
+---|---
+`clear()`       |清除所有元素
+`insert()`      |支持在某个迭代器位置插入元素、可以插入多个。复杂度与 `pos` 与两端距离较小者成线性。
+`erase()`       |删除某个迭代器或者区间的元素，返回最后被删除的迭代器。复杂度与 `insert` 一致。
+`push_front()`  |在头部插入一个元素，常数复杂度。
+`pop_front()`   |删除头部元素，常数复杂度。
+`push_back()`   |在末尾插入一个元素，常数复杂度。
+`pop_back()`    |删除末尾元素，常数复杂度。
+`swap()`        |与另一个容器进行交换，此操作是 常数复杂度 而非线性的。
+
+##### deque 的实现细节
+
+deque 通常的底层实现是**多个不连续的缓冲区**，而缓冲区中的内存是连续的。而每个缓冲区还会**记录首指针和尾指针**，用来标记**有效数据的区间**。当一个缓冲区填满之后便会在之前或者之后分配新的缓冲区来存储更多的数据。更详细的说明可以参考 [STL 源码剖析——deque 的实现原理和使用方法详解](https://blog.csdn.net/baidu_28312631/article/details/48000123)
+
+#### list
+
+`std::list` 是 `STL` 提供的 **双向链表** 数据结构。能够提供线性复杂度的随机访问，以及常数复杂度的插入和删除。
+
+##### list 之使用方法
+
+`list` 的使用方法与 `deque` 基本相同，但是增删操作和访问的复杂度不同。详细内容 [请参见 C++ 文档](https://zh.cppreference.com/w/cpp/container/list)
+list 的迭代器、长度、元素增删及修改相关的函数与 deque 相同，因此不作详细介绍。
+
+###### list 之元素访问
+
+由于 list 的实现是链表，因此它不提供随机访问的接口。若需要访问中间元素，则需要使用迭代器。
+
+- `front()` 返回首元素的引用。
+- `back()` 返回末尾元素的引用。
+
+###### list 之操作
+
+list 类型还提供了一些针对其特性实现的 STL 算法函数。由于这些算法需要 随机访问迭代器（RandomAccessIterator），因此 list 提供了特别的实现以便于使用。
+这些算法有
+
+函数|作用（kimiAI）
+---|---
+`splice()`  |`splice()` 用于将一个 list 中的元素或者一段元素移动到另一个 list 中。它有多个重载版本，但最常见的用法是将一个列表的节点移动到另一个列表中指定的位置。
+`remove()`  |`remove()` 用于移除列表中所有与给定值相等的元素。
+`sort()`    |`sort()` 用于对列表中的元素进行排序。
+`unique()`  |`unique()` 用于移除列表中连续重复的元素。
+`merge()`   |`merge()` 用于合并两个已排序的列表。
+
+#### forward_list (C++11)
+
+`std::forward_list` 是 STL 提供的 单向链表 数据结构，相比于 `std::list` 减小了空间开销。
+
+##### forward_list 的使用方法
+
+forward_list 的使用方法与 list 几乎一致，但是迭代器只有单向的，因此其具体用法不作详细介绍。详细内容 [请参见 C++ 文档](https://zh.cppreference.com/w/cpp/container/forward_list)
+
+### 关联式容器
+
+#### set
+
+`set` 是关联容器，含有**键值类型对象的已排序集**，搜索、移除和插入拥有对数复杂度。
+`set` 内部通常采用 **红黑树** 实现。**平衡二叉树** 的特性使得 `set` 非常适合处理需要同时兼顾查找、插入与删除的情况。
+和数学中的集合相似，`set` 中不会出现值相同的元素。
+如果需要有相同元素的集合，需要使用 `multiset`。`multiset` 的使用方法与 `set` 的使用方法基本相同。
+
+##### set之插入与删除工作
+
+函数|作用
+---|---
+`insert(x)`         |当容器中没有等价元素的时候，将元素 `x` 插入到 `set` 中。
+`erase(x)`          |删除值为 `x` 的 所有 元素，返回删除元素的个数。
+`erase(pos)`        |删除迭代器为 `pos` 的元素，要求迭代器必须合法。
+`erase(first,last)` |删除迭代器在 `[first,last)` 范围内的所有元素。
+`clear()`           |清空 `set`。
+
+`insert` 函数的返回值类型为 `pair<iterator, bool>`，其中 `iterator` 是一个指向所插入元素（或者是指向等于所插入值的原本就在容器中的元素）的迭代器，而 `bool` 则代表元素是否插入成功，由于 `set` 中的元素具有唯一性质，所以如果在 `set` 中已有等值元素，则插入会失败，返回 `false`，否则插入成功，返回 `true`；
+`map` 中的 `insert` 也是如此。
+
+##### 迭代器
+
+迭代器|意义
+---|---
+`begin()/cbegin()`  |返回**指向首元素**的迭代器，其中 `*begin = front`。
+`end()/cend()`      |返回指向**数组尾端占位符**的迭代器，注意是没有元素的。
+`rbegin()/crbegin()`|返回指向**逆向数组的首元素**的逆向迭代器，可以理解为**正向容器的末元素**。
+`rend()/crend()`    |返回指向**逆向数组末元素后一位置**的迭代器，对应**容器首的前一个位置**，没有元素。
+
+以上列出的迭代器中，含有字符 `c` 的为只读迭代器，你不能通过只读迭代器去修改 set 中的元素的值。
+如果一个 set 本身就是只读的，那么它的一般迭代器和只读迭代器完全等价。
+只读迭代器自 C++11 开始支持。
+
+##### 查找操作
+
+函数|意义
+---|---
+`count(x)`        |返回 set 内键为 `x` 的元素**数量**。
+`find(x)`         |在 set 内存在**键为 `x` 的元素**时会返回该元素的**迭代器**，否则返回 `end()`。
+`lower_bound(x)`  |返回指向**首个不小于给定键**的元素的迭代器。如果不存在这样的元素，返回 `end()`。
+`upper_bound(x)`  |返回指向**首个大于给定键**的元素的迭代器。如果不存在这样的元素，返回 `end()`。
+`empty()`         |返回容器是否为**空**。
+`size()`          |返回容器内**元素个数**。
+
+注意,set是键值对象的**已排序**集,故所谓"首个"即为最小
+
+>`lower_bound` 和 `upper_bound` 的时间复杂度
+>
+>set 自带的 `lower_bound` 和 `upper_bound` 的时间复杂度为 $O(\log n)$。
+但使用 `algorithm` 库中的 `lower_bound` 和 `upper_bound` 函数对 `set` 中的元素进行查询，时间复杂度为 $O(n)$。
+
+>`nth_element` 的时间复杂度
+>
+>set 没有提供自带的 `nth_element`。使用 `algorithm` 库中的 `nth_element` 查找第 `k` 大的元素时间复杂度为 $O(n)$。
+如果需要实现平衡二叉树所具备的 $O(\log n)$ 查找第 `k` 大元素的功能，需要自己手写平衡二叉树或权值线段树，或者选择使用 `pb_ds` 库中的平衡二叉树。
+
+
+##### 使用案例
+
+###### `set`在贪心中的使用
+
+在贪心算法中经常会需要出现类似 **找出并删除最小的大于等于某个值的元素**。这种操作能轻松地通过 set 来完成。
+
+~~~C++
+// 现存可用的元素
+set<int> available;
+// 需要大于等于的值
+int x;
+
+// 查找最小的大于等于x的元素
+set<int>::iterator it = available.lower_bound(x); //"点"成员函数运算符
+if (it == available.end()) {
+  // 不存在这样的元素，则进行相应操作……
+} else {
+  // 找到了这样的元素，将其从现存可用元素中移除
+  available.erase(it);
+  // 进行相应操作……
+}
+~~~
+
+#### map
+
+map 是**有序键值对容器**，它的**元素的键是唯一的**。搜索、移除和插入操作拥有对数复杂度。map 通常实现为 **红黑树**。
+
+设想如下场景：现在需要**存储一些键值对**，例如存储学生姓名对应的分数：`Tom 0`，`Bob 100`，`Alan 100`。
+但是由于**数组下标只能为非负整数**，所以无法用姓名作为下标来存储，这个时候最简单的办法就是使用 STL 中的 map。
+
+map 重载了 `operator[]`，可以用任意定义了 `operator <` 的类型作为下标（在 map 中叫做 `key`，也就是索引）：
+
+~~~C++
+map<Key, T> yourMap; \\Key 是键的类型，T 是值的类型
+~~~
+
+其实例:
+
+~~~C++
+map<string, int> mp;
+~~~
+
+map 中不会存在键相同的元素，`multimap` 中允许多个元素拥有同一键。`multimap` 的使用方法与 map 的使用方法基本相同。
+正是因为 multimap 允许多个元素拥有同一键的特点，multimap 并没有提供给出**键访问其对应值**的方法。
+
+##### map的插入与删除操作
+
+- 可以**直接通过下标**访问来进行查询或插入操作。例如 `mp["Alan"]=100`。
+- 通过向 map 中插入一个类型为 `pair<Key, T>` 的值可以达到插入元素的目的，例如 `mp.insert(pair<string,int>("Alan",100));`；
+- `erase(key)` 函数会**删除**键为 `key` 的 **所有** 元素。返回值为**删除元素的数量**。
+- `erase(pos)`: **删除**迭代器为 `pos` 的元素，要求迭代器必须合法。
+- `erase(first,last)`: **删除**迭代器在 `[first,last)` 范围内的所有元素。
+- `clear()` 函数会**清空**整个容器。
+
+>在利用下标访问 map 中的某个元素时，如果 map 中不存在相应键的元素，会**自动在 map 中插入一个新元素**，并将其值设置为默认值
+（对于整数，值为零；对于有默认构造函数的类型，会调用默认构造函数进行初始化）。
+>
+>当下标访问操作过于频繁时，容器中会出现大量无意义元素，影响 map 的效率。因此一般情况下推荐使用 `find()` 函数来寻找特定键的元素。
+
+##### 查询操作
+
+函数|作用
+---|---
+`count(x)`        | 返回容器内键为 `x` 的元素数量。复杂度为 $O(\log(size)+ans)$（关于容器大小对数复杂度，加上匹配个数）。
+`find(x)`         | 若容器内存在键为 `x` 的元素，会返回该元素的迭代器；否则返回 `end()`。
+`lower_bound(x)`  | 返回指向首个不小于给定键的元素的迭代器。
+`upper_bound(x)`  | 返回指向首个大于给定键的元素的迭代器。若容器内所有元素均小于或等于给定键，返回 `end()`。
+`empty()`         | 返回容器是否为空。
+`size()`          | 返回容器内元素个数。
+
+##### 使用样例
+
+###### map用于储存复杂状态
+
+在搜索中，我们有时需要存储一些**较为复杂的状态**（如*坐标*，*无法离散化的数值*，*字符串*等）以及**与之有关的答案**（如到达此状态的最小步数）。`map` 可以用来实现此功能。其中的键是状态，而值是与之相关的答案。
+下面的示例展示了如何使用 map 存储以 `string` 表示的状态。
+
+~~~C++
+// 存储状态与对应的答案
+map<string, int> record;
+
+// 新搜索到的状态与对应答案
+string status;
+int ans;
+// 查找对应的状态是否出现过
+map<string, int>::iterator it = record.find(status);
+if (it == record.end()) {
+  // 尚未搜索过该状态，将其加入状态记录中
+  record[status] = ans;
+  // 进行相应操作……
+} else {
+  // 已经搜索过该状态，进行相应操作……
+}
+~~~
+
+#### 遍历容器
+
+利用迭代器来遍历关联式容器的所有元素
+
+~~~C++
+set<int> s;
+typedef set<int>::iterator si;
+for (si it = s.begin(); it != s.end(); it++) cout << *it << endl;
+~~~
+
+注意:对 `map` 的迭代器解引用后，得到的是类型为 `pair<Key, T>` 的键值对
+
+C++11 中，使用**范围 for 循环**会让代码简洁很多
+
+~~~C++
+set<int> s;
+for (auto x : s) cout << x << endl;
+~~~
+
+对于任意关联式容器，使用迭代器遍历容器的时间复杂度均为 $O(n)$。
+
+#### 自定义比较方式
+
+set 在默认情况下的比较函数为 `<`（如果是**非内置类型**需要 重载 < 运算符）。然而在某些特殊情况下，我们希望能**自定义 set 内部的比较方式**。
+
+这时候可以通过**传入自定义比较器**来解决问题。
+具体来说，我们需要定义一个类，并在这个类中 **重载 ()** 运算符。
+例如，我们想要维护一个存储整数，且较大值靠前的 set，可以这样实现：
+
+~~~C++
+struct cmp {
+  bool operator()(int a, int b) { return a > b; }
+};
+
+set<int, cmp> s;
+~~~
+
+对于其他关联式容器，可以用类似的方式实现自定义比较
+
+### 无序关联式容器
+
+#### 概述
+
+自 C++11 标准起，四种基于 **哈希** 实现的无序关联式容器正式纳入了 C++ 的标准模板库中，分别是：`unordered_set`，`unordered_multiset`，`unordered_map`，`unordered_multimap`。
+
+>无序关联式容器属于 C++ 的 TR1 扩展
+
+它们与相应的关联式容器**在功能，函数等方面有诸多共同点**，而最大的不同点则体现在普通的关联式容器一般采用**红黑树**实现，内部元素**按特定顺序进行排序**；而这几种无序关联式容器则采用**哈希方式**存储元素，内部元素**不以任何特定顺序进行排序**，所以访问无序关联式容器中的元素时，访问顺序也没有任何保证。
+
+采用哈希存储的特点**使得无序关联式容器 在平均情况下 大多数操作**（包括查找，插入，删除）都能在**常数时间复杂度**内完成，相较于关联式容器与容器大小成对数的时间复杂度更加优秀。
+
+无序关联式容器与相应的关联式容器在用途和操作中有很多共同点，这里不再介绍无序关联式容器的各种操作
+
+#### 制造哈希冲突
+
+上文中提到了，在最坏情况下，对**无序关联式容器进行一些操作的时间复杂度会与容器大小成线性关系**。
+
+在**哈希函数确定**的情况下，可以构造出数据使得容器内产生大量哈希冲突，导致复杂度达到上界。
+在标准库实现里，每个元素的**散列值**是**将值对一个质数取模**得到的，更具体地说，是 **这个列表** 中的质数（g++ 6 及以前版本的编译器，这个质数一般是 $126271$，g++ 7 及之后版本的编译器，这个质数一般是 $107897$）。
+因此可以通过向容器中**插入这些模数的倍数**来达到制造大量哈希冲突的目的。
+
+#### 自定义哈希函数
+
+可以有效避免构造数据产生的大量哈希冲突
+
+需要定义一个结构体，并在结构体中重载 () 运算符，像这样
+
+~~~C++
+struct my_hash {
+  size_t operator()(int x) const { return x; }
+};
+~~~
+
+为了确保哈希函数不会被迅速破解（例如 Codeforces 中对使用无序关联式容器的提交进行 hack），可以试着在哈希函数中**加入一些随机化函数**（如时间）来增加破解的难度。
+
+例如，在 [这篇博客](https://codeforces.com/blog/entry/62393) 中给出了如下哈希函数：
+
+~~~C++
+struct my_hash {
+  static uint64_t splitmix64(uint64_t x) {
+    x += 0x9e3779b97f4a7c15;
+    x = (x ^ (x >> 30)) * 0xbf58476d1ce4e5b9;
+    x = (x ^ (x >> 27)) * 0x94d049bb133111eb;
+    return x ^ (x >> 31);
+  }
+
+  size_t operator()(uint64_t x) const {
+    static const uint64_t FIXED_RANDOM =
+        chrono::steady_clock::now().time_since_epoch().count();
+    return splitmix64(x + FIXED_RANDOM);
+  }
+
+  // 针对 std::pair<int, int> 作为主键类型的哈希函数
+  size_t operator()(pair<uint64_t, uint64_t> x) const {
+    static const uint64_t FIXED_RANDOM =
+        chrono::steady_clock::now().time_since_epoch().count();
+    return splitmix64(x.first + FIXED_RANDOM) ^
+           (splitmix64(x.second + FIXED_RANDOM) >> 1);
+  }
+};
+~~~
+
+写完自定义的哈希函数后，就可以通过 `unordered_map<int, int, my_hash> my_map;` 或者 `unordered_map<pair<int, int>, int, my_hash> my_pair_map;` 的定义方式将自定义的哈希函数传入容器了。
+
+### 容器适配器
+
+#### 栈
+
+**STL 栈**(`std::stack`) 是一种**后进先出** (Last In, First Out) 的容器适配器，**仅支持查询或删除最后一个加入的元素（栈顶元素）**，不支持随机访问，且为了保证数据的**严格有序性**，不支持迭代器。
+
+##### stack之头文件
+
+~~~C++
+#include <stack>
+~~~
+
+##### stack之定义
+
+~~~C++
+std::stack<TypeName> s;     // 使用默认底层容器 deque，数据类型为 TypeName
+std::stack<TypeName, Container> s;  // 使用 Container 作为底层容器
+std::stack<TypeName> s2(s1);        // 将 s1 复制一份用于构造 s2
+~~~
+
+##### stack之成员函数
+
+函数|意义
+---|---
+`top()`     |**访问**栈顶元素（如果栈为空，此处会出错）
+`push(x)`   |向栈中**插入**元素 x
+`pop()`     |**删除**栈顶元素
+`size()`    |查询容器中的**元素数量**
+`empty()`   |询问容器**是否为空**
+
+以上成员函数均为常数复杂度
+
+##### stack之简单示例
+
+~~~C++
+std::stack<int> s1;
+s1.push(2);
+s1.push(1);
+std::stack<int> s2(s1);
+s1.pop();
+std::cout << s1.size() << " " << s2.size() << std::endl;  // 1 2
+std::cout << s1.top() << " " << s2.top() << std::endl;    // 2 1
+s1.pop();
+std::cout << s1.empty() << " " << s2.empty() << std::endl;  // 1 0
+~~~
+
+#### 队列
+
+**STL 队列**(`std::queue`) 是一种**先进先出** (First In, First Out) 的容器适配器，仅支持**查询或删除第一个加入的元素（队首元素）**，不支持随机访问，且为了保证数据的**严格有序性**，不支持迭代器。
+
+##### queue之头文件
+
+~~~C++
+#include <queue>
+~~~
+
+##### queue之定义
+
+~~~C++
+std::queue<TypeName> q;   // 使用默认底层容器 deque，数据类型为 TypeName
+std::queue<TypeName, Container> q;  // 使用 Container 作为底层容器
+std::queue<TypeName> q2(q1);  // 将 s1 复制一份用于构造 q2
+~~~
+
+##### queue之成员函数
+
+函数|意义
+---|---
+`front()` |**访问**队首元素（如果队列为空，此处会出错）
+`push(x)` |向队列中**插入**元素 `x`
+`pop()`   |**删除**队首元素
+`size()`  |查询容器中的**元素数量**
+`empty()` |询问容器**是否为空**
+
+以上成员函数均为常数复杂度
+
+##### 简单示例
+
+~~~C++
+std::queue<int> q1;
+q1.push(2);
+q1.push(1);
+std::queue<int> q2(q1);
+q1.pop();
+std::cout << q1.size() << " " << q2.size() << std::endl;    // 1 2
+std::cout << q1.front() << " " << q2.front() << std::endl;  // 1 2
+q1.pop();
+std::cout << q1.empty() << " " << q2.empty() << std::endl;  // 1 0
+~~~
+
+#### 优先队列
+
+**优先队列** `std::priority_queue` 是一种 **堆**，一般为 **二叉堆**。
+
+##### 优先队列之头文件
+
+~~~C++
+#include <queue>
+~~~
+
+##### 优先队列之定义
+
+~~~C++
+std::priority_queue<TypeName> q;             // 数据类型为 TypeName
+std::priority_queue<TypeName, Container> q;  // 使用 Container 作为底层容器
+std::priority_queue<TypeName, Container, Compare> q;
+// 使用 Container 作为底层容器，使用 Compare 作为比较类型
+
+// 默认使用底层容器 vector
+// 比较类型 less<TypeName>（此时为它的 top() 返回为最大值）
+// 若希望 top() 返回最小值，可令比较类型为 greater<TypeName>
+// 注意：不可跳过 Container 直接传入 Compare
+
+// 从 C++11 开始，如果使用 lambda 函数自定义 Compare
+// 则需要将其作为构造函数的参数代入，如：
+auto cmp = [](const std::pair<int, int> &l, const std::pair<int, int> &r) {
+  return l.second < r.second;
+};
+std::priority_queue<std::pair<int, int>, std::vector<std::pair<int, int> >,
+                    decltype(cmp)>
+    pq(cmp);
+~~~
+
+##### 成员函数
+
+以下所有函数均为**常数复杂度**
+函数|作用
+---|---
+`top()`     |**访问堆顶**元素（此时优先队列不能为空）
+`empty()`   |询问容器**是否为空**
+`size()`    |查询容器中的**元素数量**
+
+以下所有函数均为**对数复杂度**
+函数|作用
+---|---
+`push(x)` |插入元素，并**对底层容器排序**
+`pop()`   |**删除堆顶**元素（此时优先队列不能为空）
+
+##### 简单示例
+
+~~~C++
+std::priority_queue<int> q1;
+std::priority_queue<int, std::vector<int> > q2;
+// C++11 后空格可省略
+std::priority_queue<int, std::deque<int>, std::greater<int> > q3;
+// q3 为小根堆
+for (int i = 1; i <= 5; i++) q1.push(i);
+// q1 中元素 :  [1, 2, 3, 4, 5]
+std::cout << q1.top() << std::endl;
+// 输出结果 : 5
+q1.pop();
+// 堆中元素 : [1, 2, 3, 4]
+std::cout << q1.size() << std::endl;
+// 输出结果 ：4
+for (int i = 1; i <= 5; i++) q3.push(i);
+// q3 中元素 :  [1, 2, 3, 4, 5]
+std::cout << q3.top() << std::endl;
+// 输出结果 : 1
+~~~
+
+## STL算法
+
+STL 提供了大约 100 个**实现算法的模版函数**，基本都包含在 `<algorithm>` 之中，还有一部分包含在 `<numeric>` 和 `<functional>`。完备的函数列表请 [参见参考手册](https://zh.cppreference.com/w/cpp/algorithm)，排序相关的可以参考 [排序内容的对应页面(OIwiki)](https://oi-wiki.org/basic/stl-sort/)。
+
+算法|作用
+---|---
+`find`                |**顺序查找**。`find(v.begin(), v.end(), value)`，其中 `value` 为需要查找的值。
+`reverse`             |**翻转数组、字符串**。`reverse(v.begin(), v.end())` 或 `reverse(a + begin, a + end)`。
+`unique`              |**去除容器中相邻的重复元素**。`unique(ForwardIterator first, ForwardIterator last)`，返回值为指向 **去重后 容器结尾的迭代器**，**原容器大小不变**。与 sort 结合使用可以实现完整容器去重。
+`random_shuffle`[^3]  |**随机地打乱**数组。`random_shuffle(v.begin(), v.end())` 或 `random_shuffle(v + begin, v + end)`。
+`sort`                |**排序**。`sort(v.begin(), v.end(), cmp)` 或 `sort(a + begin, a + end, cmp)`，其中 `end` 是**排序的数组最后一个元素的后一位**，`cmp` 为**自定义的比较函数**。
+`stable_sort`         |**稳定排序**，用法同 sort()。
+`nth_element`         |按指定范围进行**分类**，即找出序列中**第 n 大的元素**，使其左边均为小于它的数，右边均为大于它的数。`nth_element(v.begin(), v.begin() + mid, v.end(), cmp)` 或 `nth_element(a + begin, a + begin + mid, a + end, cmp)`。
+`binary_search`       |**二分查找**。`binary_search(v.begin(), v.end(), value)`，其中 `value` 为需要查找的值。
+`merge`               |将两个（已排序的）序列 **有序合并** 到第三个序列的 插入迭代器 上。`merge(v1.begin(), v1.end(), v2.begin(), v2.end() ,back_inserter(v3))`。
+`inplace_merge`       |将两个（已按小于运算符**排序的**）：`[first,middle)`, `[middle,last)` 范围 原地合并为一个**有序序列**。inplace_merge(v.begin(), v.begin() + middle, v.end())`。
+`lower_bound`         |在一个**有序序列中进行二分查找**，返回指向第一个 **大于等于 x** 的元素的位置的迭代器。如果不存在这样的元素，则返回尾迭代器。`lower_bound(v.begin(),v.end(),x)`。
+`upper_bound`[^4]     |在一个**有序序列中进行二分查找**，返回指向第一个 **大于 x** 的元素的位置的迭代器。如果不存在这样的元素，则返回尾迭代器。`upper_bound(v.begin(),v.end(),x)`。
+`next_permutation`    |将当前排列更改为 **全排列中的下一个排列**。如果当前排列已经是 全排列中的最后一个排列（元素完全从大到小排列），函数返回 `false` 并将排列更改为 全排列中的第一个排列（元素完全从小到大排列）；否则，函数返回 `true`。`next_permutation(v.begin(), v.end())` 或 `next_permutation(v + begin, v + end)`。
+`prev_permutation`    |将当前排列更改为 全排列中的上一个排列。用法同 `next_permutation`。
+`partial_sum`         |求**前缀和**。设源容器为 `x`，目标容器为 `y`，则令 `y[i]=x[0]+x[1]+\dots+x[i]`。`partial_sum(src.begin(), src.end(), back_inserter(dst))`。
+
+
+[^3]: random_shuffle 自 C++14 起被弃用，C++17 起被移除。
+在 C++11 以及更新的标准中，您可以使用 shuffle 函数代替原来的 random_shuffle。使用方法为 shuffle(v.begin(), v.end(), rng)（最后一个参数传入的是使用的随机数生成器，一般情况使用以真随机数生成器 random_device 播种的梅森旋转伪随机数生成器 mt19937）。
+  `// #include <random>`
+  `std::mt19937 rng(std::random_device{}());`
+  `std::shuffle(v.begin(), v.end(), rng);`
+[^4]: `lower_bound` 和 `upper_bound` 的时间复杂度
+在一般的数组里，这两个函数的时间复杂度均为 O(\log n)，但在 set 等关联式容器中，直接调用 lower_bound(s.begin(),s.end(),val) 的时间复杂度是 O(n) 的。
+set 等关联式容器中已经封装了 lower_bound 等函数（像 s.lower_bound(val) 这样），这样调用的时间复杂度是 O(\log n) 的。
+
+### 算法使用案例
+
+实现全排列
 
 ***
 
-注：
 [^1]: [链接](https://blog.csdn.net/baidu_35536188/article/details/122881541)
 [^2]: 
