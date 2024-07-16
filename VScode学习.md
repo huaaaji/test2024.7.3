@@ -98,3 +98,77 @@ vscode由typescript，采用electron架构，对于JavaScript、TypeScript和Nod
 `${selectedText}` | 当前编辑文件中选择的内容
 `${execPath}` | Code.exe的路径
 `${defaultBuildTask}` | 默认构建任务的名称
+
+### 关于配置问题
+
+配置c++调试环境时的配置文件(.vscode中)
+
+#### launch.json
+
+~~~json
+{
+    "configurations": [
+
+    {
+        "name": "(gdb) 启动",//这是显示出来的这一配置的名称
+        "type": "cppdbg",//注意配置类型的选择
+        "request": "launch",//请求配置类型。可以是“启动”或“附加”。
+        "program": "${fileDirname}\\${fileBasenameNoExtension}.exe",
+        "args": [],
+        "stopAtEntry": false,
+        "cwd": "${fileDirname}",
+        "environment": [],
+        "externalConsole": false,
+        "MIMode": "gdb",
+        "preLaunchTask": "C/C++: g++.exe 生成活动文件", //注意preLaunchTask,在vscode添加配置文件时不会生成这一键
+        "miDebuggerPath": "N:\\CODE Confriguration\\mingw64\\bin\\gdb.exe",//MI 调试程序(如 gdb)的路径。如果未指定，将首先在路径中搜索调试程序。
+        //需要指定
+        "setupCommands": [
+            {
+                "description": "为 gdb 启用整齐打印",
+                "text": "-enable-pretty-printing",
+                "ignoreFailures": true
+            },
+            {
+                "description": "将反汇编风格设置为 Intel",
+                "text": "-gdb-set disassembly-flavor intel",
+                "ignoreFailures": true
+            }
+        ]
+    }
+    ]
+    // 使用 IntelliSense 了解相关属性。 
+    // 悬停以查看现有属性的描述。
+    // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+}
+~~~
+
+#### task.json
+
+~~~json
+{
+    "tasks": [
+        {
+            "type": "cppbuild",//要自定义的任务类型
+            "label": "C/C++: g++.exe 生成活动文件",//任务名称。
+            "command": "N:\\CODE Confriguration\\mingw64\\bin\\g++.exe",
+            "args": [
+                "-fdiagnostics-color=always",
+                "-g",
+                "${file}",
+                "-o",
+                "${fileDirname}\\${fileBasenameNoExtension}.exe"
+            ],
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build",
+            "detail": "编译器: N:\\CODE Confriguration\\mingw64\\bin\\g++.exe"
+        }
+    ],
+    "version": "2.0.0"
+}
+~~~
