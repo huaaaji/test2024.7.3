@@ -131,6 +131,9 @@ int main(void) {
 
 ## C++之 ifstream/ofstream 文件输入输出流
 
+ifstream与ofstream（存在于头文件fstream）
+这便是c++ primer plus 6.8简单文件输入/输出 这一章介绍的方法
+
 ### ifstream/ofstream之使用方法
 
 读入文件内容：
